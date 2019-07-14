@@ -112,8 +112,8 @@ class Player:
         """Determine whether to allow to get stolen by the opponent."""
         pass #! TODO
     
-    def draw_with_ambassador(self, opponent):
-        """Determine whether to allow that the opponent refreshes their cards with an ambassador."""
+    def draw_with_duque(self, opponent):
+        """Determine whether to allow that the opponent draws 3 ton with a duque."""
         pass #! TODO
     
     def capt_block(self, opponent):

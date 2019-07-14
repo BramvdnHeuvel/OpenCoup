@@ -33,7 +33,7 @@ def draw_one(player, opponent):
     player.money += 1
 
 def draw_three(player, opponent):
-    response = opponent.draw_with_ambassador(player)
+    response = opponent.draw_with_duque(player)
 
     if response == AllowOrContest.contest and not player.has('duque'):
         player.death()
@@ -57,6 +57,7 @@ def assassinate(player, opponent):
     elif response == Assassination.contest:
         if player.has('assassin'):
             player.money += -3
+            opponent.death()
             opponent.death()
         else:
             player.death()
@@ -124,7 +125,7 @@ def steal(player, opponent):
                 opponent.death()
 
 def switch(player, opponent):
-    response = player.switch_ambassador(opponent)
+    response = opponent.switch_ambassador(player)
 
     if response == AllowOrContest.contest and not player.has('ambassador'):
         player.death()
