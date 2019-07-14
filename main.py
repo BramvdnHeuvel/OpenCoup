@@ -4,4 +4,4 @@ from game.objects import Player
 bram = Player("Bram")
 mark = Player("Mark")
 
-print(str(execute_turn(bram, mark)))
+print("------------------------\n\nThe winner is....\n" + str(execute_turn(bram, mark)))
