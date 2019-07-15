@@ -1,4 +1,4 @@
-from responses import Turns, Assassination, AllowOrContest, Theft
+from mechanics.responses import Turns, Assassination, AllowOrContest, Theft
 from game.objects import deck
 
 def execute_turn(player, opponent, turn_no=1):
@@ -26,40 +26,41 @@ def execute_turn(player, opponent, turn_no=1):
     elif turn == Turns.switch:
         switch(player, opponent)
     
-    return execute_turn(opponent, player)
+    return execute_turn(opponent, player, turn_no+1)
 
 
 def draw_one(player, opponent):
     player.money += 1
 
 def draw_three(player, opponent):
-    response = opponent.draw_with_ambassador(player)
+    response = opponent.draw_with_duque(player)
 
     if response == AllowOrContest.contest and not player.has('duque'):
-        player.death()
+        player.death(opponent)
     else:
         if response == AllowOrContest.contest:
-            opponent.death()
+            opponent.death(player)
         
         player.money += 3
 
 def coup(player, opponent):
     player.money += -7
-    opponent.death()
+    opponent.death(player)
 
 def assassinate(player, opponent):
     response = opponent.assassination(player)
 
     if response == Assassination.allow:
         player.money += -3
-        opponent.death()
+        opponent.death(player)
     
     elif response == Assassination.contest:
         if player.has('assassin'):
             player.money += -3
-            opponent.death()
+            opponent.death(player)
+            opponent.death(player)
         else:
-            player.death()
+            player.death(opponent)
     
     elif response == Assassination.block:
         player.money += -3
@@ -69,10 +70,10 @@ def assassinate(player, opponent):
             pass
         else:
             if opponent.has('contessa'):
-                player.death()
+                player.death(opponent)
             else:
-                opponent.death()
-                opponent.death()
+                opponent.death(player)
+                opponent.death(player)
 
 def steal(player, opponent):
     response = opponent.get_stolen(player)
@@ -89,9 +90,9 @@ def steal(player, opponent):
 
             player.money += money
             opponent.money += -1*money
-            opponent.death()
+            opponent.death(player)
         else:
-            player.death()
+            player.death(opponent)
     
     elif response == Theft.block_ambassador:
         response2 = player.ambass_block(opponent)
@@ -100,13 +101,13 @@ def steal(player, opponent):
             pass
         else:
             if opponent.has('ambassador'):
-                player.death()
+                player.death(opponent)
             else:
                 money = min(opponent.money, 2)
 
                 player.money += money
                 opponent.money += -1*money
-                opponent.death()
+                opponent.death(player)
     
     elif response == Theft.block_captain:
         response2 = player.capt_block(opponent)
@@ -115,27 +116,27 @@ def steal(player, opponent):
             pass
         else:
             if opponent.has('captain'):
-                player.death()
+                player.death(opponent)
             else:
                 money = min(opponent.money, 2)
 
                 player.money += money
                 opponent.money += -1*money
-                opponent.death()
+                opponent.death(player)
 
 def switch(player, opponent):
-    response = player.switch_ambassador(opponent)
+    response = opponent.switch_ambassador(player)
 
     if response == AllowOrContest.contest and not player.has('ambassador'):
-        player.death()
+        player.death(opponent)
     else:
         if response == AllowOrContest.contest:
-            opponent.death()
+            opponent.death(player)
 
         card3 = deck.draw()
         card4 = deck.draw()
 
-        trash_card_1, trash_card_2 = player.choose(card3, card4)
+        trash_card_1, trash_card_2 = player.choose(card3, card4, opponent)
         
         deck.insert(trash_card_1)
         deck.insert(trash_card_2)
