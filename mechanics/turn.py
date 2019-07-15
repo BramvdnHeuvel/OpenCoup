@@ -26,7 +26,7 @@ def execute_turn(player, opponent, turn_no=1):
     elif turn == Turns.switch:
         switch(player, opponent)
     
-    return execute_turn(opponent, player)
+    return execute_turn(opponent, player, turn_no+1)
 
 
 def draw_one(player, opponent):

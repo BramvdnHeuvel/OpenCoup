@@ -216,7 +216,7 @@ class Player:
         self.claims_after_switch[name] += 1
         self.claims_before_switch[name] += 1
     
-    def choose(self, card3, card4):
+    def choose(self, card3, card4, opponent):
         cards = [card for card in self.cards if card.alive]
         cards.extend([card3, card4])
 
@@ -234,6 +234,8 @@ class Player:
                     break
             if trash1 is not None:
                 break
+        cards.remove(trash1)
+
         while True:
             response = input(f"{self.name}: What's the second card you'll put back into the deck?")
             for card in cards:
@@ -243,7 +245,6 @@ class Player:
             if trash1 is not None:
                 break
 
-        cards.remove(trash1)
         cards.remove(trash2)
         self.cards = [card for card in self.cards if not card.alive]
         self.cards.extend(cards)
@@ -341,15 +342,20 @@ class NPC:
         if answer[0] == final_answer:
             return Turns.draw_one
         if answer[1] == final_answer:
+            self.claim('duque')
             return Turns.draw_three
         if answer[2] == final_answer:
+            self.claim('ambassador')
             return Turns.steal
         if answer[3] == final_answer:
+            self.claim('ambassador')
             return Turns.switch
         if answer[4] == final_answer:
+            self.claim('assassin')
             return Turns.assassinate
         if answer[5] == final_answer:
             return Turns.coup
+
 
     def lives(self):
         """Returns the amount of alive cards that the player has left."""
@@ -381,6 +387,8 @@ class NPC:
             self.cards[0].alive = False
         elif answer[1] == final_answer:
             self.cards[1].alive = False
+        else:
+            print("Woah! I think I cheated death!")
 
     def assassination(self, opponent):
         """Determine whether to allow, contest or block the assassination."""
@@ -392,6 +400,7 @@ class NPC:
         if answer[1] == final_answer:
             return Assassination.contest
         if answer[2] == final_answer:
+            self.claim('contessa')
             return Assassination.block
     
     def contessa_block(self, opponent):
@@ -414,8 +423,10 @@ class NPC:
         if answer[1] == final_answer:
             return Theft.contest
         if answer[2] == final_answer:
+            self.claim('captain')
             return Theft.block_captain
         if answer[3] == final_answer:
+            self.claim('ambassador')
             return Theft.block_ambassador
 
     def draw_with_duque(self, opponent):
@@ -499,8 +510,12 @@ class Deck:
             'duque': 3
         }
         self.length = 15
+
+    def calculate_length(self):
+        self.length = sum(self.cards.values())
     
     def draw(self):
+        self.calculate_length()
         i = 0
         drawn = random.randint(1, self.length)
 
@@ -514,5 +529,14 @@ class Deck:
     
     def insert(self, card):
         self.cards[card.type] += 1
+    
+    def reset(self):
+        self.cards = {
+            'assassin': 3,
+            'contessa': 3,
+            'captain': 3,
+            'ambassador': 3,
+            'duque': 3
+        }
 
 deck = Deck()
