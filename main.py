@@ -1,11 +1,9 @@
+from training.genetic import train_model
+from game.objects import Player, NPC, Model
 from mechanics.turn import execute_turn
-from game.objects import Player, NPC
-from game.model import new_model
+from game.reader import read_model
 
-model1 = new_model()
-model2 = new_model()
+bram = Player("Bram")
+enemy = Model(read_model('models/v1/model1.json'))
 
-bram = NPC(model1, name="BRAM")
-mark = NPC(model2, name="MARK")
-
-print(execute_turn(bram, mark))
+print(execute_turn(bram, NPC(enemy2, "OpenCoup")))
