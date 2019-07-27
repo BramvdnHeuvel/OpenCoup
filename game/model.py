@@ -1,3 +1,4 @@
+from game.reader import write_model
 import random
 
 def matrix_functions():
@@ -39,6 +40,10 @@ class Model:
         self.judge_switching_ambassador = self.take_matrix(8)
         self.choose_ambassador_cards = self.take_matrix(9)
 
+    def save(self, file_name='models/recent/last-training.json'):
+        write_model(self, file_name)
+        return
+
     def take_matrix(self, n):
         def calculate_variable(vector):
             for i in range(3):
@@ -49,6 +54,7 @@ class Model:
                     for tupel, i in zip(row, vector):
                         func = self.functions[tupel[0]%len(FUNC)]
                         total += func(i, tupel[1])
+                    total = max(total, 0)
                     new_vector.append(total)
                 
                 vector = new_vector
