@@ -9,19 +9,19 @@ ROW_SKIP = 1/50
 
 INDIVIDUAL_NOISE = 1/100
 
-def train_model(size=50, generations=1):
+def train_model(size=50, generations=200):
     gen = [new_model() for _ in range(size)]
 
     for i in range(generations):
         gen = new_generation(gen)
-        if i % 50 == 0:
-            print(f"Generation {i} has been reached.")
 
-            if i % 5000 == 0:
-                victor = new_model()
-                for challenger in gen:
-                    victor = two_model_competition(victor, challenger)
-                print(victor.data)
+        if i % 100 == 0:
+            victor = new_model()
+            for challenger in gen:
+                victor = two_model_competition(victor, challenger)
+            print(victor.data)
+            victor.save(f'models/recent/gen-{i}.json')
+        print(f"Generation {i} has been reached.")
 
     # Once the training has finished, pick the best one.
     victor = new_model()
@@ -54,16 +54,26 @@ def make_new_child(model_zero, model_one, model_two):
     for pack in range(len(model_zero.data)):
         if random.random() > PACK_SKIP:
             for i in range(len(model_zero.data[pack])):
-                if random.random() > ROW_SKIP:
-                    for j in range(len(model_zero.data[pack][i])):
-                        a = model_zero.data[pack][i][j]
-                        b = model_one.data[pack][i][j]
-                        c = model_two.data[pack][i][j]
+                for j in range(len(model_zero.data[pack][i])):
+                    if random.random() > ROW_SKIP:
+                        for k in range(len(model_zero.data[pack][i][j])):
+                            a = model_zero.data[pack][i][j][k][1]
+                            b = model_one.data[pack][i][j][k][1]
+                            c = model_two.data[pack][i][j][k][1]
 
-                        new_value = min(a/2 + F * (b - c), 1000000)
-                        new_value = max(new_value, -1000000)
+                            ta = model_zero.data[pack][i][j][k][0]
+                            tb = model_one.data[pack][i][j][k][0]
 
-                        child.data[pack][i][j] = new_value
+                            new_value = min(a/2 + F * (b - c), 1000000)
+                            new_value = max(new_value, -1000000)
+
+                            new_t_value = ta
+                            if random.random() < 0.05:
+                                new_t_value = tb
+                                if random.random() < 0.2:
+                                    new_t_value = random.randint(0,7)
+
+                            child.data[pack][i][j][k] = (new_t_value, new_value)
 
     return child
 

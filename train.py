@@ -5,6 +5,7 @@ from game.reader import read_model
 from game.model import new_model
 
 bram = Player("Bram")
-enemy = Model(read_model('models/recent/gen-2000.json'))
+enemy = train_model()
+enemy.save()
 
 print(execute_turn(bram, NPC(enemy, "OpenCoup")))
