@@ -1,6 +1,7 @@
-from game.objects import NPC, deck
+from game.objects import NPC, deck, Model
 from game.model import new_model
 from mechanics.turn import execute_turn
+from game.reader import read_model
 import random
 
 F = 1/2
@@ -9,8 +10,11 @@ ROW_SKIP = 1/50
 
 INDIVIDUAL_NOISE = 1/100
 
-def train_model(size=50, generations=200):
+def train_model(size=50, generations=2000):
     gen = [new_model() for _ in range(size)]
+    gen.append(Model(read_model('models/v2/model7.json')))
+    gen.append(Model(read_model('models/v2/model8.json')))
+    gen.append(Model(read_model('models/v2/model9.json')))
 
     for i in range(generations):
         gen = new_generation(gen)
